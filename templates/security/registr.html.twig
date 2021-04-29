@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    {% form_theme form "bootstrap_4_layout.html.twig" %}
+    <div class="col-lg-4 m-auto p-4">
+        {{ form_start(form) }}
+        <div class="form-group">
+            <label for="textarea">{{ form_label(form.email) }}</label>
+            {{ form_widget(form.email) }}
+        </div>
+        <div class="form-group">
+            <label for="textarea">{{ form_label(form.password) }}</label>
+            {{ form_widget(form.password) }}
+        </div>
+        <div class="col-lg-6 m-auto">
+            <button type="submit" class="btn btn-dark btn-lg btn-block">Ок</button>
+        </div>
+        {{ form_end(form) }}
+
+    </div>
+{% endblock %}
