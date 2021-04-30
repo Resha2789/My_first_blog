@@ -4,12 +4,14 @@ namespace App\Controller;
 
 use App\Entity\Article;
 use App\Entity\Comment;
+use App\Entity\User;
 use App\Form\ArticleType;
 use App\Form\CommentType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class CommentController extends AbstractController
 {
@@ -30,9 +32,12 @@ class CommentController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() and $form->isValid()) {
-            $data = $form->getData();
+            /** @var $user User */
+            $user = $this->getUser();
+
             $comment->setCreatedAt(new \DateTime('now'));
             $comment->setArticle($article);
+            $comment->setUserName($user);
 
             $em = $this->getDoctrine()->getManager();
             $em->persist($comment);

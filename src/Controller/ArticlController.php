@@ -82,7 +82,7 @@ class ArticlController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() and $form->isValid()) {
-            $data = $form->getData();
+
             $article->setUpdateAt(new \DateTime('now'));
 
             $em = $this->getDoctrine()->getManager();
