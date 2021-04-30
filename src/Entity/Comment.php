@@ -42,6 +42,12 @@ class Comment
      */
     private $article;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="comments")
+     * @ORM\JoinColumn(name="user_id", nullable=false)
+     */
+    private $userName;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -116,5 +122,17 @@ class Comment
     public function getArticle()
     {
         return $this->article;
+    }
+
+    public function getUserName(): ?User
+    {
+        return $this->userName;
+    }
+
+    public function setUserName(?User $userName): self
+    {
+        $this->userName = $userName;
+
+        return $this;
     }
 }

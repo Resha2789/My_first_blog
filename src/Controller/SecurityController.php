@@ -8,17 +8,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class SecurityController extends AbstractController
 {
-    private $passwordEncoder;
-
-    public function __construct(UserPasswordEncoderInterface $passwordEncoder)
-    {
-        $this->passwordEncoder = $passwordEncoder;
-    }
 
     /**
      * @Route("/login", name="app_login")
@@ -48,7 +43,7 @@ class SecurityController extends AbstractController
     /**
      * @Route("/registr", name="registr")
      */
-    public function registr(Request $request): Response
+    public function registr(Request $request, UserPasswordEncoderInterface $passwordEncoder): Response
     {
         $user = new User();
 
@@ -56,11 +51,24 @@ class SecurityController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() and $form->isValid()) {
-            $data = $form->getData();
+
+            $password = $passwordEncoder->encodePassword($user, $user->getPassword());
+
+            $user->setPassword($password);
+            $user->setRoles(['ROLE_USER']);
 
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
             $em->flush();
+
+            $token = new UsernamePasswordToken($user, null, 'main', $user->getRoles());
+            $this->container->get('security.token_storage')->setToken($token);
+            $this->container->get('session')->set('_security_main', serialize($token));
+
+            $this->addFlash(
+                'success',
+                'Вы зарегистрировались'
+            );
 
             return $this->redirectToRoute('article');
         }

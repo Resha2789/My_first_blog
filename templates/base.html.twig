@@ -32,10 +32,17 @@
         <div class="navbar-nav my-2 my-lg-0">
             <li class="nav-item">
                 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                    <a class="nav-link" href="{{ path('app_logout') }}">Выйти</a>
-                {% else %}
-                    <a class="nav-link" href="{{ path('app_login') }}">Войти</a>
+                    <div class="nav-link">{{ app.user.email }}</div>
                 {% endif %}
+            </li>
+            <li class="nav-item">
+                {% block login %}
+                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                        <a class="nav-link" href="{{ path('app_logout') }}">Выйти</a>
+                    {% else %}
+                        <a class="nav-link" href="{{ path('app_login') }}">Войти</a>
+                    {% endif %}
+                {% endblock %}
             </li>
         </div>
     </nav>
