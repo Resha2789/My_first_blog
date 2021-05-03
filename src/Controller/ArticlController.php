@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Article;
+use App\Entity\User;
 use App\Form\ArticleType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -52,8 +53,11 @@ class ArticlController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() and $form->isValid()) {
-            $data = $form->getData();
+            /** @var $user User */
+            $user = $this->getUser();
+
             $article->setCreatedAt(new \DateTime('now'));
+            $article->setUserId($user);
 
             $em = $this->getDoctrine()->getManager();
             $em->persist($article);
