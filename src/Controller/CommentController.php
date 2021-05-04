@@ -12,80 +12,49 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
+use App\Service\Comments;
 
 class CommentController extends AbstractController
 {
     /**
-     * @Route ("/comments/create/{article}", name="comment_create_form")
+     * @Route ("/article/{article}/comment/create", name="comment_create")
      * @param Article $article
-     * @return Response
      */
-    public function create(Request $request, Article $article)
+    public function create(Article $article, Comments $comments)
     {
-        $comment = new Comment();
+//        dd($article->getId());
+        $data = $comments->create_comment($article);
 
-        $form = $this->createForm(CommentType::class, $comment, [
-            'action' => $this->generateUrl('comment_create_form', ['article' => $article->getId()]),
-            'method' => 'POST',
-        ]);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() and $form->isValid()) {
-            /** @var $user User */
-            $user = $this->getUser();
-
-            $comment->setCreatedAt(new \DateTime('now'));
-            $comment->setArticle($article);
-            $comment->setUserName($user);
-
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($comment);
-            $em->flush();
-
+        if ($data['save']) {
             return $this->redirectToRoute('single_article', ['article' => $article->getId()]);
         }
 
         return $this->render('comment/form.html.twig', [
-            'form' => $form->createView(),
             'article' => $article,
+            'form' => $data['form']
         ]);
     }
 
     /**
-     * @Route ("/comments/update/{article}/{comment}", name="comment_update_form")
+     * @Route ("/article/{article}/comment/{comment}", name="comment_update")
      * @param Article $article
+     * @param Comments $comments
      * @param Comment $comment
-     * @return Response
      */
-    public function update(Request $request, Article $article, Comment $comment)
+    public function comment_update(Article $article, Comment $comment, Comments $comments)
     {
-        $form = $this->createForm(CommentType::class, $comment, [
-            'action' => $this->generateUrl('comment_update_form', [
-                'article' => $article->getId(),
-                'comment' => $comment->getId(),
-            ]),
-            'method' => 'POST',
-        ]);
 
-        $form->handleRequest($request);
+        $data = $comments->update_comment($article, $comment);
 
-        if ($form->isSubmitted() and $form->isValid()) {
-            $data = $form->getData();
-            $comment->setUpdatedAt(new \DateTime('now'));
-
-            $em = $this->getDoctrine()->getManager();
-            $em->flush();
-
-            return $this->redirectToRoute('single_article', ['article' => $article->getId()]);
+        if ($data['save']) {
+            return $this->redirectToRoute('single_article');
         }
 
-        return $this->render('comment/form.html.twig', [
-            'form' => $form->createView(),
+        return $this->render('article/single.html.twig', [
             'article' => $article,
+            'comment' => $comment,
         ]);
     }
-
 
     /**
      * @Route ("/comment/delete/{article}/{comment}", name="comment_delete")

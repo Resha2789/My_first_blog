@@ -29,13 +29,13 @@ class ArticlController extends AbstractController
     }
 
     /**
-     * @Route ("/article/single/{article}", name="single_article")
+     * @Route ("/article/{article}/comments", name="single_article")
      * @param Article $article
      */
     public function single(Article $article)
     {
         return $this->render('article/single.html.twig', [
-            'article' => $article,
+            'article' => $article
         ]);
     }
 

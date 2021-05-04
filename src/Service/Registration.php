@@ -5,33 +5,25 @@ namespace App\Service;
 use App\Entity\User;
 use App\Form\UserType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 
 class Registration extends AbstractController
 {
-    protected $requestStack;
+    protected $request;
 
     private $passwordEncoder;
 
-
-    public function __construct(RequestStack $requestStack, UserPasswordEncoderInterface $passwordEncoder)
+    public function __construct(Request $request, UserPasswordEncoderInterface $passwordEncoder)
     {
-        $this->requestStack = $requestStack;
+        $this->request = $request;
         $this->passwordEncoder = $passwordEncoder;
-    }
-
-    public function anyMethod()
-    {
-        $request = $this->requestStack->getCurrentRequest();
-        return $request;
     }
 
     public function registration()
     {
 
-        $request = $this->anyMethod();
+        $request = $this->request->getRequest();
 
         $user = new User();
 
@@ -65,7 +57,7 @@ class Registration extends AbstractController
 
     public function registration_form()
     {
-        $request = $this->anyMethod();
+        $request = $this->request->getRequest();
 
         $user = new User();
 
