@@ -18,7 +18,7 @@
                     <br>
                     <div>Содержимое: {{ article.content }}</div>
                     <br>
-                    <a class="btn btn-info my-2" href="{{ path('single_article', {'article': article.id}) }}">Открыть</a>
+                    <a class="btn btn-info my-2" href="{{ path('single_article', {'article': article.id, 'comment_text': '', 'comment_val': ''}) }}">Открыть</a>
                 </div>
             </div>
 

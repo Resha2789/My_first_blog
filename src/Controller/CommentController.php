@@ -4,29 +4,27 @@ namespace App\Controller;
 
 use App\Entity\Article;
 use App\Entity\Comment;
-use App\Entity\User;
-use App\Form\ArticleType;
 use App\Form\CommentType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\User\UserInterface;
 use App\Service\Comments;
 
 class CommentController extends AbstractController
 {
     /**
      * @Route ("/article/{article}/comment/create", name="comment_create")
+     * @param Request $request
      * @param Article $article
+     * @param Comments $comments
      */
-    public function create(Article $article, Comments $comments)
+    public function comment_create(Request $request, Article $article, Comments $comments)
     {
-//        dd($article->getId());
-        $data = $comments->create_comment($article);
+        $data = $comments->create_comment($request, $article);
 
         if ($data['save']) {
-            return $this->redirectToRoute('single_article', ['article' => $article->getId()]);
+            return $this->redirectToRoute('single_article', ['article' => $article->getId(), 'comment_text'=>'', 'comment_val'=>'']);
         }
 
         return $this->render('comment/form.html.twig', [
@@ -36,23 +34,24 @@ class CommentController extends AbstractController
     }
 
     /**
-     * @Route ("/article/{article}/comment/{comment}", name="comment_update")
+     * @Route ("/article/{article}/comment/{comment}/update", name="comment_update")
+     * @param Request $request
      * @param Article $article
      * @param Comments $comments
      * @param Comment $comment
+     * @return Response
      */
-    public function comment_update(Article $article, Comment $comment, Comments $comments)
+    public function comment_update(Request $request, Article $article, Comment $comment, Comments $comments)
     {
-
-        $data = $comments->update_comment($article, $comment);
+        $data = $comments->update_comment($request, $article, $comment);
 
         if ($data['save']) {
-            return $this->redirectToRoute('single_article');
+            return $this->redirectToRoute('single_article', ['article' => $article->getId(), 'comment_text'=>'', 'comment_val'=>'']);
         }
 
-        return $this->render('article/single.html.twig', [
+        return $this->render('comment/form.html.twig', [
             'article' => $article,
-            'comment' => $comment,
+            'form' => $data['form']
         ]);
     }
 
@@ -68,6 +67,6 @@ class CommentController extends AbstractController
         $em->remove($comment);
         $em->flush();
 
-        return $this->redirectToRoute('single_article', ['article' => $article->getId()]);
+        return $this->redirectToRoute('single_article', ['article' => $article->getId(), 'comment_text'=>'', 'comment_val'=>'']);
     }
 }

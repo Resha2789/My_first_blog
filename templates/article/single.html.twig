@@ -30,23 +30,29 @@
                 <p class="card-text">Содержимое: <br> {{ comment.content }}</p>
 
                 {% if is_granted('ROLE_ADMIN') or is_granted('IS_AUTHENTICATED_REMEMBERED') and comment.userName == app.user %}
-                    <a class="btn btn-info my-2" href="{{ path('comment_update', {'article': article.id, 'comment': comment.id}) }}">Изменть</a>
+                    <a class="btn btn-info my-2"
+                       href="{{ path('single_article', {'article': article.id, 'comment_text': '/comment/', 'comment_val': comment.id}) }}">Изменть</a>
                     <a class="btn btn-secondary my-2" href="{{ path('comment_delete', {'article': article.id, 'comment': comment.id}) }}">Удалить</a>
                 {% endif %}
             </div>
         </div>
     {% endfor %}
 
+
     {% if is_granted('ROLE_ADMIN') or is_granted('IS_AUTHENTICATED_REMEMBERED') %}
-        {{ render(controller('App\\Controller\\CommentController::create', {'article': article.id})) }}
+        {% if comment | default(0) == 0 %}
+            {{ render(controller('App\\Controller\\CommentController::comment_create', {'article': article.id})) }}
+        {% else %}
+            {{ render(controller('App\\Controller\\CommentController::comment_update', {'article': article.id, 'comment': comment})) }}
+        {% endif %}
     {% endif %}
 
 {% endblock %}
 
-{#{% block script %}#}
-
-{#        <script>#}
-{#            $("html").scrollTop(10000);#}
-{#        </script>#}
-
-{#{% endblock %}#}
+ {% block script %}
+     {% if comment | default(0) != 0 %}
+         <script>
+             $("html").scrollTop(10000);
+         </script>
+     {% endif %}
+ {% endblock %}

@@ -26,18 +26,19 @@ class Comments extends AbstractController
     }
 
     /**
-     * create_comment
+     * @param $request
      * @param $article
      */
-    public function create_comment($article)
+    public function create_comment($request, $article)
     {
-        $request = $this->request->getRequest();
 
         $comment = new Comment();
 
         $form = $this->createForm(CommentType::class, $comment, [
-            'action' => $this->generateUrl('comment_create', ['article' => $article->getId()]),
-            'method' => 'POST',
+            'action' => $this->generateUrl('comment_create', [
+                'article' => $article->getId()
+            ]),
+            'method' => 'POST'
         ]);
 
         $form->handleRequest($request);
@@ -61,21 +62,23 @@ class Comments extends AbstractController
     }
 
     /**
-     * update_comment
-     * @param $article
-     * @param $comment
+     * @param $request
+     * @param Article $article
+     * @param Comment $comment
      */
-    public function update_comment(Article $article, Comment $comment)
+    public function update_comment($request, Article $article, Comment $comment)
     {
-        $request = $this->request->getRequest();
+
 
         $form = $this->createForm(CommentType::class, $comment, [
             'action' => $this->generateUrl('comment_update', [
                 'article' => $article->getId(),
-                'comment' => $comment->getId(),
+                'comment' => $comment->getId()
             ]),
-            'method' => 'POST',
+            'method' => 'POST'
         ]);
+
+//        $request = $request->getRequest();
 
         $form->handleRequest($request);
 

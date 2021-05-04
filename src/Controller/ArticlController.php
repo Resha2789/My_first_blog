@@ -29,13 +29,14 @@ class ArticlController extends AbstractController
     }
 
     /**
-     * @Route ("/article/{article}/comments", name="single_article")
+     * @Route ("/article/{article}{comment_text}{comment_val}", name="single_article", requirements={"comment_text"="(/comment/)?", "comment_val"="(\d+)?"})
      * @param Article $article
      */
-    public function single(Article $article)
+    public function single(Article $article, $comment_val)
     {
         return $this->render('article/single.html.twig', [
-            'article' => $article
+            'article' => $article,
+            'comment' => $comment_val,
         ]);
     }
 
@@ -79,7 +80,7 @@ class ArticlController extends AbstractController
     public function update(Request $request, Article $article)
     {
         $form = $this->createForm(ArticleType::class, $article, [
-            'action' => $this->generateUrl('update_article', ['article' => $article->getId()]),
+            'action' => $this->generateUrl('update_article', ['article' => $article->getId(), 'comment_text'=>'', 'comment_val'=>'']),
             'method' => 'POST',
         ]);
 
